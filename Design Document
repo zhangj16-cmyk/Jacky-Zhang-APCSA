@@ -1,0 +1,34 @@
+Program Overview
+
+This java program generates and prints a fully solved, 9 by 9 Sudoku puzzle every time the program is run. The program then checks to make sure that the Sudoku puzzle printed is valid, and correct. A standard Sudoku board requires every row, every column and every 3 by 3 box to contain the digits 1 through 9 once. 
+
+Data Structures
+
+2D Arrays - The Sudoku board is a 9 by 9 2D Array declared as int[][] board = new int[9][9]. This was used to create the outline of the Sudoku Board
+
+ArrayList - This was used to hold the digits 1-9 so that collections.shuffle() could randomly reorder them.
+
+Algorithm Design
+
+
+This program first builds the base pattern and fills up every cell and makes sure that the digits 1-9 appears once in every row column and 3 by 3 box by using the method buildBasePattern(). It then randomizes the digits through buildDigitMap(), which shuffles the list 1-9 into a random order and maps it. applyDigitMap() then replaces every cell with its mapped counterpart. shuffleRowsinBands() then processes three horizontal bands independently, and then the three rows are rearranged in a random order. shuffleColumnsInStacks() then does the same but for three vertical stacks, and combined this makes sure that the Sudoku board is random but complete.
+
+Methods
+
+generate() - creates sudoku instance
+buildBasePattern() - fills board[][] using cyclic shift formula, producing a valid base grid
+buildDigitMap() - uses arraylist and collections.shuffle() to build a randomised digit substitution table in digitmap[]
+applyDigitMap() - iterates over every cell and remaps its value through digitmap[]
+shuffleRowsinBands() - randomly reorders the three columns within each of three vertical stacks
+printBoard() - prints board
+isValid() - validates the completed board and makes sure its correct
+getBoard() - returns the board
+
+Testing Plan
+
+isValid() is called at the end of every execution to make sure that the board is valid, and checks for mistakes. 
+
+Challenges
+
+
+Getting the board to look random was very difficult for me. The base pattern was always the same, and without additional randomisation every run would make the same exact board. The solution to this was just adding the digit mapping step, and that would make it so before any row or column shuffling, the board looks completely different from the base pattern because every symbol was substituted. The subsequent row and column shuffling would then add even more variation, and this would lead to more random boards throughout constant running of the program.
