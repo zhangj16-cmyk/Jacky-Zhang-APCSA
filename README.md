@@ -14,4 +14,4 @@ This Sudoku board is generated using a structured randomization process. First, 
 
 The Files Included Are :
 
-Readme.md & Code.
+Readme.md & Code & Design Document.
