@@ -1,0 +1,132 @@
+// This is the code.
+
+import java.util.ArrayList;
+import java.util.Collections;
+
+public class SudokuGenerator {
+    private static final int SIZE  = 9;
+    private static final int BOX   = 3;  
+    private int[][] board;
+    private int[]   digitMap;
+    public SudokuGenerator() {
+        board    = new int[SIZE][SIZE];
+        digitMap = new int[SIZE + 1];
+    }
+    public static void main(String[] args) {
+        SudokuGenerator gen = new SudokuGenerator();
+        gen.generate();
+        gen.printBoard();
+        System.out.println("\nValid Sudoku: " + gen.isValid());
+    }
+    public void generate() {
+        buildBasePattern();
+        buildDigitMap();
+        applyDigitMap();
+        shuffleRowsInBands();
+        shuffleColumnsInStacks();
+    }
+    private void buildBasePattern() {
+        for (int row = 0; row < SIZE; row++) {
+            int shift = (row % BOX) * BOX + (row / BOX);
+            for (int col = 0; col < SIZE; col++) {
+                board[row][col] = (col + shift) % SIZE + 1;
+            }
+        }
+    }
+    private void buildDigitMap() {
+        ArrayList<Integer> digits = new ArrayList<>();
+        for (int i = 1; i <= SIZE; i++) {
+            digits.add(i);
+        }
+        Collections.shuffle(digits);
+        for (int i = 0; i < SIZE; i++) {
+            digitMap[i + 1] = digits.get(i);
+        }
+    }
+    private void applyDigitMap() {
+        for (int row = 0; row < SIZE; row++) {
+            for (int col = 0; col < SIZE; col++) {
+                board[row][col] = digitMap[board[row][col]];
+            }
+        }
+    }
+    private void shuffleRowsInBands() {
+        for (int band = 0; band < BOX; band++) {
+            ArrayList<Integer> indices = new ArrayList<>();
+            for (int i = 0; i < BOX; i++) indices.add(i);
+            Collections.shuffle(indices);
+
+            int startRow = band * BOX;
+            int[][] temp = new int[BOX][SIZE];
+            for (int i = 0; i < BOX; i++) {
+                temp[i] = board[startRow + i].clone();
+            }
+            for (int i = 0; i < BOX; i++) {
+                board[startRow + i] = temp[indices.get(i)];
+            }
+        }
+    }
+    private void shuffleColumnsInStacks() {
+        for (int stack = 0; stack < BOX; stack++) {
+            ArrayList<Integer> indices = new ArrayList<>();
+            for (int i = 0; i < BOX; i++) indices.add(i);
+            Collections.shuffle(indices);
+            int startCol = stack * BOX;
+            int[][] temp = new int[SIZE][BOX];
+            for (int row = 0; row < SIZE; row++) {
+                for (int i = 0; i < BOX; i++) {
+                    temp[row][i] = board[row][startCol + i];
+                }
+            }
+            for (int row = 0; row < SIZE; row++) {
+                for (int i = 0; i < BOX; i++) {
+                    board[row][startCol + i] = temp[row][indices.get(i)];
+                }
+            }
+        }
+    }
+    public void printBoard() {
+        String hLine = "+-------+-------+-------+";
+        for (int row = 0; row < SIZE; row++) {
+            if (row % BOX == 0) System.out.println(hLine);
+            for (int col = 0; col < SIZE; col++) {
+                if (col % BOX == 0) System.out.print("| ");
+                System.out.print(board[row][col] + " ");
+            }
+            System.out.println("|");
+        }
+        System.out.println(hLine);
+    }
+    public boolean isValid() {
+        for (int row = 0; row < SIZE; row++) {
+            if (!isGroupValid(board[row])) return false;
+        }
+        for (int col = 0; col < SIZE; col++) {
+            int[] column = new int[SIZE];
+            for (int row = 0; row < SIZE; row++) column[row] = board[row][col];
+            if (!isGroupValid(column)) return false;
+        }
+        for (int boxRow = 0; boxRow < BOX; boxRow++) {
+            for (int boxCol = 0; boxCol < BOX; boxCol++) {
+                int[] box = new int[SIZE];
+                int idx = 0;
+                for (int r = 0; r < BOX; r++) {
+                    for (int c = 0; c < BOX; c++) {
+                        box[idx++] = board[boxRow * BOX + r][boxCol * BOX + c];
+                    }
+                }
+                if (!isGroupValid(box)) return false;
+            }
+        }
+        return true;
+    }
+    private boolean isGroupValid(int[] group) {
+        boolean[] seen = new boolean[SIZE + 1];
+        for (int val : group) {
+            if (val < 1 || val > SIZE || seen[val]) return false;
+            seen[val] = true;
+        }
+        return true;
+    }
+    public int[][] getBoard() { return board; }
+}
